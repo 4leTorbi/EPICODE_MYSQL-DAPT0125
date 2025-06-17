@@ -59,7 +59,7 @@ CREATE TABLE Warehouse_Store (
 
 -- drop table if exists Sales;
 CREATE TABLE Sales (
-    SaleID INT PRIMARY KEY AUTO_INCREMENT, 
+    SaleID INT PRIMARY KEY AUTO_INCREMENT,
     StoreID INT,
     ProductID INT,
     Quantity INT,
@@ -122,7 +122,7 @@ INSERT INTO Warehouse_Stock VALUES
 , (2, 107, 55) 
 , (2, 108, 85)
 , (2, 109, 75)
-, (2, 110, 95)
+,(2, 110, 95)
 ;
 
 
@@ -163,64 +163,3 @@ INSERT INTO Sales (StoreID, ProductID, Quantity, SaleDate) VALUES
 , (3, 110, 4, '2025-11-15')
 , (2, 101, 3, '2025-12-05')
 ;
-
-select *
-from warehouse_stock
-where warehouseID = 2;
-
--- Query per aggiornare la tabella delle vendite (Sales).
-insert into sales (StoreID, ProductID, Quantity, SaleDate) values
-(1, 106, 2, '2025-12-13') -- nuovo record di vendita
-;
-insert into sales (StoreID, ProductID, Quantity, SaleDate) values
-(2, 104, 15, '2025-12-18') -- nuovo record di vendita
-;
-
-insert into sales (StoreID, ProductID, Quantity, SaleDate) values
-(1, 108, 9, '2025-12-19') -- nuovo record di vendita
-;
-
-insert into sales (StoreID, ProductID, Quantity, SaleDate) values
- (2, 107, 10, '2025-12-21') -- nuovo record di vendita
- ;
-
--- Query per aggiornare la tabella delle scorte di magazzino (Stock).
-update warehouse_stock 
-set quantity = quantity - 10 -- valore (quantità) da modificare 
-where warehouseID = 2 and ProductID = 10 -- (identificativo della riga)
-;
-
-select Mag.WarehouseID as ID
-, WarehouseName as Magazzino
-, StoreID as Store
-, ProductID as Prodotto
-, Quantity as Qtà_Stock
-, Threshold as Soglia
-, case 
-	when Quantity < Threshold then 'sotto controllo' else 'da rifornire' end as Livello_Stock
-from warehouse as Mag
-inner join warehouse_store as Store
-on Mag.warehouseID = Store.warehouseID
-inner join warehouse_stock as Stock
-on Mag.warehouseID = Stock.warehouseID
-inner join restock_threshold as Thres
-on Store.warehouseID = Thres.warehouseID
-;
- 
--- opzione con query annidata:
-UPDATE Warehouse_Stock
-SET Quantity = Quantity - 5
-WHERE WarehouseID = (
-    SELECT WarehouseID
-    FROM Warehouse_Store
-    WHERE StoreID = 1
-    LIMIT 1
-)
-AND ProductID = 101;
-
--- Prende il primo magazzino disponibile (LIMIT 1):
-SELECT WarehouseID
--- (INTO warehouse)
-FROM Warehouse_Store
-WHERE StoreID = 1
-LIMIT 1;
